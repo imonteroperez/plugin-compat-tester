@@ -58,23 +58,23 @@ public class MavenPom {
     private final static String ARTIFACT_ID_ELEMENT = "artifactId";
     private final static String VERSION_ELEMENT = "version";
 
-    private File rootDir;
-    private String pomFileName;
-    
-    public MavenPom(File rootDir){
-        this(rootDir, "pom.xml");
-    }
-    
-    private MavenPom(File rootDir, String pomFileName){
-        this.rootDir = rootDir;
-        this.pomFileName = pomFileName;
-    }
+	private File rootDir;
+	private String pomFileName;
+	
+	public MavenPom(File rootDir){
+		this(rootDir, "pom.xml");
+	}
+	
+	private MavenPom(File rootDir, String pomFileName){
+		this.rootDir = rootDir;
+		this.pomFileName = pomFileName;
+	}
 
-    public void transformPom(MavenCoordinates coreCoordinates) throws PomTransformationException{
-        File pom = new File(rootDir.getAbsolutePath()+"/"+pomFileName);
-        File backupedPom = new File(rootDir.getAbsolutePath()+"/"+pomFileName+".backup");
-        try {
-            FileUtils.rename(pom, backupedPom);
+	public void transformPom(MavenCoordinates coreCoordinates) throws PomTransformationException{
+		File pom = new File(rootDir.getAbsolutePath()+"/"+pomFileName);
+		File backupedPom = new File(rootDir.getAbsolutePath()+"/"+pomFileName+".backup");
+		try {
+			FileUtils.rename(pom, backupedPom);
 
             Document doc;
             try {
@@ -102,15 +102,15 @@ public class MavenPom {
             }
 
             writeDocument(pom, doc);
-        } catch (Exception e) {
-            throw new PomTransformationException("Error while transforming pom : "+pom.getAbsolutePath(), e);
-        }
-    }
+		} catch (Exception e) {
+			throw new PomTransformationException("Error while transforming pom : "+pom.getAbsolutePath(), e);
+		}
+	}
 
     /**
      * Removes the dependency if it exists.
      */
-    public void removeDependency(@Nonnull String groupdId, @Nonnull String artifactId) throws IOException {
+	public void removeDependency(@Nonnull String groupdId, @Nonnull String artifactId) throws IOException {
         File pom = new File(rootDir.getAbsolutePath() + "/" + pomFileName);
         Document doc;
         try {
