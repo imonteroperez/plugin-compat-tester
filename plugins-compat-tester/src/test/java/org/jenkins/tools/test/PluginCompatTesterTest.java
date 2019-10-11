@@ -211,11 +211,10 @@ public class PluginCompatTesterTest {
 
 		PluginCompatTesterConfig config = new PluginCompatTesterConfig(testFolder.getRoot(),
 				new File("../reports/PluginCompatReport.xml"), 
-				new File("/home/imontero/.m2/settings.xml"));
+				new ClassPathResource("m2-settings.xml").getFile());
 
 		File bomFile = new ClassPathResource("jenkins-bom.xml").getFile();
 		config.setBom(bomFile);
-		config.setExternalMaven(new File("/usr/bin/mvn"));
 		config.setIncludePlugins(includedPlugins);
 		config.setSkipTestCache(true);
 		config.setCacheThresholStatus(TestStatus.TEST_FAILURES);

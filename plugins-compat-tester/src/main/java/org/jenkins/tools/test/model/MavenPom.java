@@ -58,23 +58,23 @@ public class MavenPom {
     private final static String ARTIFACT_ID_ELEMENT = "artifactId";
     private final static String VERSION_ELEMENT = "version";
 
-	private File rootDir;
-	private String pomFileName;
-	
-	public MavenPom(File rootDir){
-		this(rootDir, "pom.xml");
-	}
-	
-	private MavenPom(File rootDir, String pomFileName){
-		this.rootDir = rootDir;
-		this.pomFileName = pomFileName;
-	}
+    private File rootDir;
+    private String pomFileName;
+    
+    public MavenPom(File rootDir){
+        this(rootDir, "pom.xml");
+    }
+    
+    private MavenPom(File rootDir, String pomFileName){
+        this.rootDir = rootDir;
+        this.pomFileName = pomFileName;
+    }
 
-	public void transformPom(MavenCoordinates coreCoordinates) throws PomTransformationException{
-		File pom = new File(rootDir.getAbsolutePath()+"/"+pomFileName);
-		File backupedPom = new File(rootDir.getAbsolutePath()+"/"+pomFileName+".backup");
-		try {
-			FileUtils.rename(pom, backupedPom);
+    public void transformPom(MavenCoordinates coreCoordinates) throws PomTransformationException{
+        File pom = new File(rootDir.getAbsolutePath()+"/"+pomFileName);
+        File backupedPom = new File(rootDir.getAbsolutePath()+"/"+pomFileName+".backup");
+        try {
+            FileUtils.rename(pom, backupedPom);
 
             Document doc;
             try {
@@ -102,15 +102,15 @@ public class MavenPom {
             }
 
             writeDocument(pom, doc);
-		} catch (Exception e) {
-			throw new PomTransformationException("Error while transforming pom : "+pom.getAbsolutePath(), e);
-		}
-	}
+        } catch (Exception e) {
+            throw new PomTransformationException("Error while transforming pom : "+pom.getAbsolutePath(), e);
+        }
+    }
 
     /**
      * Removes the dependency if it exists.
      */
-	public void removeDependency(@Nonnull String groupdId, @Nonnull String artifactId) throws IOException {
+    public void removeDependency(@Nonnull String groupdId, @Nonnull String artifactId) throws IOException {
         File pom = new File(rootDir.getAbsolutePath() + "/" + pomFileName);
         Document doc;
         try {
@@ -186,7 +186,6 @@ public class MavenPom {
             }
 
             String trimmedArtifactId = artifactId.getTextTrim();
-            excludeSecurity144Compat(mavenDependency);
             VersionNumber replacement = toReplace.get(trimmedArtifactId);
             if (replacement == null) {
                 replacement = toReplaceTest.get(trimmedArtifactId);
@@ -207,7 +206,12 @@ public class MavenPom {
                 }
             }
             version.addText(replacement.toString());
-            toReplaceUsed.put(trimmedArtifactId, replacement);
+            Element scope = mavenDependency.element("scope");
+            if (scope != null && scope.getTextTrim().equals("test")) {
+                toReplaceTestUsed.put(trimmedArtifactId, replacement);
+            } else {
+                toReplaceUsed.put(trimmedArtifactId, replacement);
+            }
         }
         // If the replacement dependencies weren't explicitly present in the pom, add them directly now
         toReplace.entrySet().removeAll(toReplaceUsed.entrySet());
@@ -220,17 +224,6 @@ public class MavenPom {
         addPlugins(toAddTest, pluginGroupIds, dependencies, "test");
 
         writeDocument(pom, doc);
-    }
-
-    /** JENKINS-25625 workaround. */
-    private void excludeSecurity144Compat(Element dependency) {
-        Element exclusions = dependency.element("exclusions");
-        if (exclusions == null) {
-            exclusions = dependency.addElement("exclusions");
-        }
-        Element exclusion = exclusions.addElement("exclusion");
-        exclusion.addElement(GROUP_ID_ELEMENT).addText("org.jenkins-ci");
-        exclusion.addElement(ARTIFACT_ID_ELEMENT).addText("SECURITY-144-compat");
     }
 
     /**
@@ -254,7 +247,6 @@ public class MavenPom {
             if(scope != null) {
                 dependency.addElement("scope").addText(scope);
             }
-            excludeSecurity144Compat(dependency);
         }
     }
 

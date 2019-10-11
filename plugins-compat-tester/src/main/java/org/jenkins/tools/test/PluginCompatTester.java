@@ -171,11 +171,6 @@ public class PluginCompatTester {
             }
         }
 
-        DataImporter dataImporter = null;
-        if(config.getGaeBaseUrl() != null && config.getGaeSecurityToken() != null){
-            dataImporter = new DataImporter(config.getGaeBaseUrl(), config.getGaeSecurityToken());
-        }
-
         // Determine the plugin data
         HashMap<String,String> pluginGroupIds = new HashMap<>();  // Used to track real plugin groupIds from WARs
 
@@ -347,12 +342,6 @@ public class PluginCompatTester {
                     
                     PluginCompatResult result = new PluginCompatResult(actualCoreCoordinates, status, errorMessage, warningMessages, buildLogFilePath);
                     report.add(pluginInfos, result);
-
-                    // Adding result to GAE
-                    if(dataImporter != null){
-                        dataImporter.importPluginCompatResult(result, pluginInfos, config.reportFile.getParentFile());
-                        // TODO: import log files
-                    }
 
                     if(config.reportFile != null){
                         if(!config.reportFile.exists()){
@@ -535,7 +524,6 @@ public class PluginCompatTester {
             }
 
             List<String> args = new ArrayList<>();
-            args.add("--define=maven.test.redirectTestOutputToFile=false");
             args.add("--define=forkCount=1");
             args.add("hpi:resolve-test-dependencies");
             args.add("hpi:test-hpl");
@@ -551,9 +539,10 @@ public class PluginCompatTester {
             forExecutionHooks.put("config", config);
             forExecutionHooks.put("pluginDir", pluginCheckoutDir);
             pcth.runBeforeExecution(forExecutionHooks);
+	    args = (List<String>)forExecutionHooks.get("args");
 
             // Execute with tests
-            runner.run(mconfig, pluginCheckoutDir, buildLogFile, ((List<String>)forExecutionHooks.get("args")).toArray(new String[args.size()]));
+	    runner.run(mconfig, pluginCheckoutDir, buildLogFile, args.toArray(new String[args.size()]));
 
             return new TestExecutionResult(((PomData)forExecutionHooks.get("pomData")).getWarningMessages());
         }catch(PomExecutionException e){
