@@ -118,6 +118,11 @@ public class CliOptions {
             "These options will be used a la -D")
     private String mavenPropertiesFile;
 
+    @Parameter(names="-gaeSecurityToken", description = "Allows to pass GAE Security token needed to write data")
+    private String gaeSecurityToken;
+    @Parameter(names="-gaeBaseUrl", description = "Allows to pass GAE plugin compat tester base url")
+    private String gaeBaseUrl;
+
     @Parameter(names="-hookPrefixes", description = "Prefixes of the extra hooks' classes")
     private String hookPrefixes;
 
@@ -133,6 +138,9 @@ public class CliOptions {
 
     @Parameter(names = "-failOnError", description = "Immediately if the PCT run fails for a plugin. Error status will be also reported as a return code")
     private boolean failOnError;
+
+    @Parameter(names = "-bom", description = "BOM file to be used for plugin versions rather than an Update Center or War file")
+    private File bom;
 
     public String getUpdateCenterUrl() {
         return updateCenterUrl;
@@ -192,6 +200,14 @@ public class CliOptions {
         return cacheThresholdStatus;
     }
 
+    public String getGaeSecurityToken() {
+        return gaeSecurityToken;
+    }
+
+    public String getGaeBaseUrl() {
+        return gaeBaseUrl;
+    }
+
     public String getHookPrefixes() {
         return hookPrefixes;
     }
@@ -217,6 +233,11 @@ public class CliOptions {
     @CheckForNull
     public List<PCTPlugin> getOverridenPlugins() {
         return overridenPlugins;
+    }
+
+    @CheckForNull
+    public File getBOM() {
+        return this.bom;
     }
 
     public boolean isFailOnError() {

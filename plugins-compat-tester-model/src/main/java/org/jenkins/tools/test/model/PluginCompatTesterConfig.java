@@ -119,6 +119,11 @@ public class PluginCompatTesterConfig {
 
     private Map<String, String> mavenProperties = Collections.emptyMap();
     private String mavenPropertiesFile;
+
+    // GoogleAppEngine property allowing to provide a security token to be able to write data
+    private String gaeSecurityToken;
+    // GoogleAppEngin base url for plugin compat tester
+    private String gaeBaseUrl;
  
     // Classpath prefixes of the extra hooks
     private List<String> hookPrefixes = new ArrayList<>(Collections.singletonList("org.jenkins"));
@@ -130,6 +135,9 @@ public class PluginCompatTesterConfig {
 
     // Immediately if the PCT run fails for a plugin. Error status will be also reported as a return code
     private boolean failOnError;
+
+    // Path to a BOM file to get plugin data
+    private File bom;
 
     public PluginCompatTesterConfig(File workDirectory, File reportFile, File m2SettingsFile){
         this(DEFAULT_UPDATE_CENTER_URL, DEFAULT_PARENT_GAV,
@@ -252,6 +260,15 @@ public class PluginCompatTesterConfig {
         this.mavenPropertiesFile = mavenPropertiesFile;
     }
 
+    @CheckForNull
+    public File getBom() {
+        return bom;
+    }
+
+    public void setBom(File bom) {
+        this.bom = bom;
+    }
+
     /**
      * Retrieves Maven Properties from available sources like {@link #mavenPropertiesFile}.
      * @return Map of properties
@@ -354,6 +371,22 @@ public class PluginCompatTesterConfig {
 
     public void setCacheThresholStatus(TestStatus cacheThresholStatus) {
         this.cacheThresholStatus = cacheThresholStatus;
+    }
+
+    public String getGaeSecurityToken() {
+        return gaeSecurityToken;
+    }
+
+    public void setGaeSecurityToken(String gaeSecurityToken) {
+        this.gaeSecurityToken = gaeSecurityToken;
+    }
+
+    public String getGaeBaseUrl() {
+        return gaeBaseUrl;
+    }
+
+    public void setGaeBaseUrl(String gaeBaseUrl) {
+        this.gaeBaseUrl = gaeBaseUrl;
     }
 
     public File getWar() {
