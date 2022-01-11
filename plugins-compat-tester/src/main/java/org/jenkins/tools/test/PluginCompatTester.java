@@ -323,8 +323,8 @@ public class PluginCompatTester {
                             status = TestStatus.COMPILATION_ERROR;
                         } else if (!e.getTestDetails().hasBeenExecuted()) { // testing was not able to start properly (i.e: invalid exclusion list file format)
                             status = TestStatus.INTERNAL_ERROR;
-                        } else if (e.getTestDetails().hasFailures()) { 
-                            status = TestStatus.TEST_FAILURES;                            
+                        } else if (e.getTestDetails().hasFailures()) {
+                            status = TestStatus.TEST_FAILURES;
                         } else { // Can this really happen ???
                             status = TestStatus.SUCCESS;
                         }
@@ -544,7 +544,7 @@ public class PluginCompatTester {
             }
 
             List<String> args = new ArrayList<>();
-            
+
             Map<String, String> userProperties = mconfig.userProperties;
             args.add(String.format("--define=forkCount=%s",userProperties.containsKey("forkCount") ? userProperties.get("forkCount") : "1"));
             args.add("hpi:resolve-test-dependencies");
@@ -597,6 +597,7 @@ public class PluginCompatTester {
         ScmRepository repository;
         ScmManager scmManager = SCMManagerFactory.getInstance().createScmManager();
         for (String connectionURL: connectionURLs){
+            connectionURL = connectionURL.replace("git://", "https://"); // See: https://github.blog/2021-09-01-improving-git-protocol-security-github/
             System.out.println("Checking out from SCM connection URL : " + connectionURL + " (" + name + "-" + version + ") at tag " + scmTag);
             if (checkoutDirectory.isDirectory()) {
                 FileUtils.deleteDirectory(checkoutDirectory);
@@ -899,9 +900,9 @@ public class PluginCompatTester {
             throw new RuntimeException("UpdateSite.Data instantiation problems", e);
         }
     }
-    
+
     /**
-     * Provides the Maven module used for a plugin on a {@code mvn [...] -pl} operation in the parent path 
+     * Provides the Maven module used for a plugin on a {@code mvn [...] -pl} operation in the parent path
      */
     public static String getMavenModule(String plugin, File pluginPath, MavenRunner runner, MavenRunner.Config mavenConfig) throws PomExecutionException, IOException {
         String absolutePath = pluginPath.getAbsolutePath();
